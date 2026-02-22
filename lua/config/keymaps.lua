@@ -72,6 +72,41 @@ map("n", "N", "Nzzzv", { desc = "Prev result (centered)" })
 -- Clear search highlight
 map("n", "<leader>nh", "<cmd>noh<CR>", { desc = "Clear search highlight" })
 
+-- ── Clean up empty [No Name] buffers ───────────────────────────
+-- When opening a real file, delete any empty unnamed buffers that
+-- are no longer displayed in any window (deferred to avoid races)
+vim.api.nvim_create_autocmd("BufEnter", {
+  callback = function()
+    vim.schedule(function()
+      local current = vim.api.nvim_get_current_buf()
+      local current_name = vim.api.nvim_buf_get_name(current)
+
+      -- Only proceed if we're entering a real file (has a name, not neo-tree)
+      if current_name == "" or vim.bo[current].filetype == "neo-tree" then
+        return
+      end
+
+      -- Find and delete empty [No Name] buffers not displayed in any window
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
+          local name = vim.api.nvim_buf_get_name(buf)
+          local listed = vim.bo[buf].buflisted
+          local in_window = vim.fn.bufwinid(buf) ~= -1
+
+          -- Only delete if not displayed in any window
+          if name == "" and listed and not in_window and not vim.bo[buf].modified then
+            local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+            local is_empty = #lines == 0 or (#lines == 1 and lines[1] == "")
+            if is_empty then
+              vim.api.nvim_buf_delete(buf, { force = true })
+            end
+          end
+        end
+      end
+    end)
+  end,
+})
+
 -- ── Smart quit ─────────────────────────────────────────────────
 -- If only an empty [No Name] buffer remains, quit nvim entirely
 vim.api.nvim_create_autocmd("QuitPre", {
