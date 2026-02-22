@@ -107,17 +107,39 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
 })
 
--- ── Smart quit ─────────────────────────────────────────────────
--- If only an empty [No Name] buffer remains, quit nvim entirely
-vim.api.nvim_create_autocmd("QuitPre", {
-  callback = function()
-    local bufs = vim.fn.getbufinfo({ buflisted = 1 })
-    if #bufs == 1 then
-      local buf = bufs[1]
-      -- Empty unnamed buffer with no changes
-      if buf.name == "" and buf.changed == 0 and vim.fn.line("$") == 1 and vim.fn.getline(1) == "" then
-        vim.cmd("qa!")
-      end
+-- ── Smart :q ───────────────────────────────────────────────────
+-- :q with 1 file (+ neo-tree) → quit nvim
+-- :q with 2+ files → close current buffer
+local function smart_quit(force)
+  local current = vim.api.nvim_get_current_buf()
+
+  -- Don't do smart quit if we're in neo-tree, just close the window
+  if vim.bo[current].filetype == "neo-tree" then
+    vim.cmd(force and "q!" or "q")
+    return
+  end
+
+  -- Count real file buffers (listed, named)
+  local real_bufs = 0
+  for _, buf in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+    if buf.name ~= "" then
+      real_bufs = real_bufs + 1
     end
-  end,
-})
+  end
+
+  if real_bufs <= 1 then
+    -- One or zero real files, quit entirely
+    vim.cmd(force and "qa!" or "qa")
+  else
+    -- Multiple files, close current buffer (same as ,q)
+    vim.cmd("bnext")
+    vim.api.nvim_buf_delete(current, { force = force })
+  end
+end
+
+vim.api.nvim_create_user_command("Q", function() smart_quit(false) end, {})
+vim.api.nvim_create_user_command("Qf", function() smart_quit(true) end, {})
+
+-- Remap :q and :q! to use smart quit
+vim.cmd([[cnoreabbrev <expr> q getcmdtype() == ":" && getcmdline() == "q" ? "Q" : "q"]])
+vim.cmd([[cnoreabbrev <expr> q! getcmdtype() == ":" && getcmdline() == "q!" ? "Qf" : "q!"]])
