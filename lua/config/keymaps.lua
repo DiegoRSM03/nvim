@@ -31,12 +31,18 @@ map("n", "<leader>fc", "<cmd>FzfLua commands<CR>",    { desc = "Commands" })
 map("n", "<leader>fs", "<cmd>FzfLua grep_curbuf<CR>", { desc = "Search current file" })
 
 -- ── LSP ──────────────────────────────────────────────────────
-map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
+map("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
 map("n", "[d", vim.diagnostic.goto_prev,         { desc = "Previous diagnostic" })
 map("n", "]d", vim.diagnostic.goto_next,         { desc = "Next diagnostic" })
 
--- ── oil.nvim ─────────────────────────────────────────────────
-map("n", "<leader>o", "<cmd>Oil<CR>", { desc = "Open oil file explorer" })
+-- ── Neo-tree ─────────────────────────────────────────────────
+map("n", "<leader>e", function()
+  if vim.bo.filetype == "neo-tree" then
+    vim.cmd.wincmd("p") -- jump to previous window
+  else
+    vim.cmd("Neotree focus")
+  end
+end, { desc = "Toggle focus: neo-tree ↔ code" })
 
 -- ── Misc ─────────────────────────────────────────────────────
 -- Move selected lines up/down in visual mode

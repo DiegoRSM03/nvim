@@ -70,7 +70,7 @@ return {
   },
 
   -- ── nvim-web-devicons ─────────────────────────────────────────
-  -- File icons used by oil, fzf-lua, lualine
+  -- File icons used by neo-tree, fzf-lua, lualine
   -- Requires a Nerd Font: https://www.nerdfonts.com
   {
     "nvim-tree/nvim-web-devicons",

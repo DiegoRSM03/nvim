@@ -13,7 +13,7 @@ return {
         cmp = true,
         gitsigns = true,
         nvimtree = false,
-        oil = true,
+        neo_tree = true,
         treesitter = true,
         mason = true,
         native_lsp = {
