@@ -15,7 +15,20 @@ map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
 -- ── Buffer navigation ────────────────────────────────────────
 map("n", "<Tab>",   ":bnext<CR>",     { desc = "Next buffer" })
 map("n", "<S-Tab>", ":bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<leader>q", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
+map("n", "<leader>q", function()
+  local bufs = vim.fn.getbufinfo({ buflisted = 1 })
+  if #bufs <= 1 then
+    -- Last buffer: create empty buffer, then delete old one
+    local current = vim.api.nvim_get_current_buf()
+    vim.cmd("enew")
+    vim.api.nvim_buf_delete(current, { force = false })
+  else
+    -- Switch to next buffer, then delete the previous one
+    local current = vim.api.nvim_get_current_buf()
+    vim.cmd("bnext")
+    vim.api.nvim_buf_delete(current, { force = false })
+  end
+end, { desc = "Close current buffer" })
 map("n", "<leader>Q", "<cmd>qa<CR>",      { desc = "Quit all" })
 
 -- ── Save ─────────────────────────────────────────────────────
@@ -58,3 +71,18 @@ map("n", "N", "Nzzzv", { desc = "Prev result (centered)" })
 
 -- Clear search highlight
 map("n", "<leader>nh", "<cmd>noh<CR>", { desc = "Clear search highlight" })
+
+-- ── Smart quit ─────────────────────────────────────────────────
+-- If only an empty [No Name] buffer remains, quit nvim entirely
+vim.api.nvim_create_autocmd("QuitPre", {
+  callback = function()
+    local bufs = vim.fn.getbufinfo({ buflisted = 1 })
+    if #bufs == 1 then
+      local buf = bufs[1]
+      -- Empty unnamed buffer with no changes
+      if buf.name == "" and buf.changed == 0 and vim.fn.line("$") == 1 and vim.fn.getline(1) == "" then
+        vim.cmd("qa!")
+      end
+    end
+  end,
+})
