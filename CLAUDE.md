@@ -66,7 +66,6 @@ Never add plugin specs directly to `lazy.lua` or `init.lua`.
 | mason.nvim + mason-lspconfig | LSP server installer |
 | nvim-lspconfig | LSP server definitions |
 | conform.nvim | Async formatting on save |
-| nvim-lint | Linting (eslint_d) |
 | nvim-cmp + sources | Autocompletion |
 | LuaSnip + friendly-snippets | Snippets |
 | neo-tree.nvim | Persistent file explorer sidebar |
@@ -98,6 +97,11 @@ other plugins trigger filetype events before treesitter is ready.
 **oil.nvim is not in this config.**
 It was evaluated and replaced by neo-tree. Do not add it back.
 
+**ESLint runs as an LSP server, not via nvim-lint.**
+nvim-lint + eslint_d was removed — the `eslint` LSP server (Mason-managed)
+provides the same diagnostics plus code actions, and doesn't break when
+switching node versions with nvm. Do not add nvim-lint/eslint_d back.
+
 ---
 
 ## Language Support
@@ -106,9 +110,9 @@ The following languages have full LSP + formatting + linting support:
 
 | Language | LSP Server | Formatter | Linter |
 |----------|-----------|-----------|--------|
-| JavaScript | ts_ls | prettier | eslint_d |
-| TypeScript | ts_ls | prettier | eslint_d |
-| TSX | ts_ls | prettier | eslint_d |
+| JavaScript | ts_ls | prettier | eslint (LSP) |
+| TypeScript | ts_ls | prettier | eslint (LSP) |
+| TSX | ts_ls | prettier | eslint (LSP) |
 | HTML | html | prettier | — |
 | CSS | cssls | prettier | — |
 | JSON | jsonls | prettier | — |
@@ -122,7 +126,7 @@ The following languages have full LSP + formatting + linting support:
 ```bash
 brew install neovim fzf ripgrep stylua
 brew install --cask font-jetbrains-mono-nerd-font
-npm install -g prettier eslint_d
+npm install -g prettier
 ```
 
 ---
@@ -191,9 +195,8 @@ npm install -g prettier eslint_d
 1. Add the LSP server name to `ensure_installed` in `lsp.lua`
 2. Add a `vim.lsp.config("server", { capabilities = capabilities })` call
 3. Add the formatter to `formatters_by_ft` in the conform block in `lsp.lua`
-4. Add the linter to `linters_by_ft` in `misc.lua` if applicable
-5. Add the treesitter parser to `ensure_installed` in `treesitter.lua`
-6. Update the language support table in this file
+4. Add the treesitter parser to `ensure_installed` in `treesitter.lua`
+5. Update the language support table in this file
 
 ---
 

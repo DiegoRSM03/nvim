@@ -3,7 +3,6 @@
 -- mason: auto-installs language servers
 -- mason-lspconfig: bridges mason with vim.lsp.config
 -- conform: async formatting
--- nvim-lint: linting
 -- ============================================================
 return {
   -- Mason: LSP/formatter/linter installer UI
@@ -37,7 +36,9 @@ return {
 
           map("n", "gd",         vim.lsp.buf.definition,      vim.tbl_extend("force", opts, { desc = "Go to definition" }))
           map("n", "gD",         vim.lsp.buf.declaration,     vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-          map("n", "gr",         vim.lsp.buf.references,      vim.tbl_extend("force", opts, { desc = "References" }))
+          map("n", "gr", function()
+            require("fzf-lua").lsp_references({ jump1 = true, ignore_current_line = true })
+          end, vim.tbl_extend("force", opts, { desc = "References" }))
           map("n", "gi",         vim.lsp.buf.implementation,  vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
           map("n", "K",          vim.lsp.buf.hover,           vim.tbl_extend("force", opts, { desc = "Hover docs" }))
           map("n", "<leader>rn", vim.lsp.buf.rename,          vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
@@ -87,6 +88,8 @@ return {
           "yamlls",  -- YAML
           "lua_ls",  -- Lua
           "eslint",  -- ESLint
+          "pyright", -- Python (activated per-project via .nvim.lua)
+          "ruff",    -- Python linter/formatter (activated per-project via .nvim.lua)
         },
         automatic_installation = true,
         -- Enable each server after mason installs it
@@ -125,26 +128,6 @@ return {
       vim.keymap.set({ "n", "v" }, "<leader>fm", function()
         require("conform").format({ async = true, lsp_fallback = true })
       end, { desc = "Format file" })
-    end,
-  },
-
-  -- ── nvim-lint: linting ─────────────────────────────────────────
-  {
-    "mfussenegger/nvim-lint",
-    event = { "BufReadPost", "BufWritePost" },
-    config = function()
-      local lint = require("lint")
-      lint.linters_by_ft = {
-        javascript      = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescript      = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-      }
-      vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
-        callback = function()
-          lint.try_lint()
-        end,
-      })
     end,
   },
 }
