@@ -113,8 +113,8 @@ vim.api.nvim_create_autocmd("BufEnter", {
 local function smart_quit(force)
   local current = vim.api.nvim_get_current_buf()
 
-  -- Don't do smart quit if we're in neo-tree, just close the window
-  if vim.bo[current].filetype == "neo-tree" then
+  -- Special windows (quickfix, help, neo-tree, ...): just close the window
+  if vim.bo[current].buftype ~= "" or vim.bo[current].filetype == "neo-tree" then
     vim.cmd(force and "q!" or "q")
     return
   end
