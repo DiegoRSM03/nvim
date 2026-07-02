@@ -22,9 +22,9 @@ brew install neovim fzf ripgrep
 # Fonts (required for icons)
 brew install --cask font-jetbrains-mono-nerd-font
 
-# Formatters & Linters
+# Formatters
 brew install stylua
-npm install -g prettier eslint_d
+npm install -g prettier
 ```
 
 ## Installation
@@ -78,7 +78,6 @@ nvim
 | [mason.nvim](https://github.com/williamboman/mason.nvim) | LSP/formatter installer |
 | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP configurations |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Async formatting |
-| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | Linting |
 | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) | Autocompletion |
 | [LuaSnip](https://github.com/L3MON4D3/LuaSnip) | Snippets |
 | [copilot.lua](https://github.com/zbirenbaum/copilot.lua) | GitHub Copilot |
@@ -179,9 +178,9 @@ nvim
 
 | Language | LSP | Formatter | Linter |
 |----------|-----|-----------|--------|
-| JavaScript | ts_ls | prettier | eslint_d |
-| TypeScript | ts_ls | prettier | eslint_d |
-| TSX/JSX | ts_ls | prettier | eslint_d |
+| JavaScript | ts_ls | prettier | eslint (LSP) |
+| TypeScript | ts_ls | prettier | eslint (LSP) |
+| TSX/JSX | ts_ls | prettier | eslint (LSP) |
 | HTML | html | prettier | — |
 | CSS | cssls | prettier | — |
 | JSON | jsonls | prettier | — |
