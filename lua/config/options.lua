@@ -54,3 +54,34 @@ opt.mouse = "a" -- enable mouse support
 
 -- Project-local config: source .nvim.lua from cwd (with trust prompt)
 opt.exrc = true
+
+-- Disable italics globally, regardless of colorscheme.
+-- Strips the italic attribute from every highlight group; re-runs on
+-- each :colorscheme change (incl. the :FzfLua colorschemes picker).
+-- Runs twice: a scheduled pass (after synchronous handlers like neo-tree)
+-- and a short deferred pass (catches themes that apply highlights via an
+-- async handle a tick later, e.g. material.nvim).
+local function strip_italics()
+  for name, hl in pairs(vim.api.nvim_get_hl(0, {})) do
+    local changed = false
+    if hl.italic then
+      hl.italic = false
+      changed = true
+    end
+    if hl.cterm and hl.cterm.italic then
+      hl.cterm.italic = nil
+      changed = true
+    end
+    if changed then
+      vim.api.nvim_set_hl(0, name, hl)
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("NoItalics", { clear = true }),
+  callback = function()
+    vim.schedule(strip_italics)
+    vim.defer_fn(strip_italics, 50)
+  end,
+})
