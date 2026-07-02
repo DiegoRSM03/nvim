@@ -44,6 +44,13 @@ map("n", "<leader>fc", "<cmd>FzfLua commands<CR>",    { desc = "Commands" })
 map("n", "<leader>fs", "<cmd>FzfLua grep_curbuf<CR>", { desc = "Search current file" })
 
 -- ── LSP ──────────────────────────────────────────────────────
+-- Drop nvim 0.11 built-in gr* maps: they shadow `gr` (references)
+-- and make it wait timeoutlen before firing
+for _, m in ipairs({ "grr", "grn", "gri", "grt" }) do
+  vim.keymap.del("n", m)
+end
+vim.keymap.del({ "n", "x" }, "gra")
+
 map("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
 map("n", "[d", vim.diagnostic.goto_prev,         { desc = "Previous diagnostic" })
 map("n", "]d", vim.diagnostic.goto_next,         { desc = "Next diagnostic" })
