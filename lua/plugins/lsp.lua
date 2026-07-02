@@ -87,6 +87,8 @@ return {
           "yamlls",  -- YAML
           "lua_ls",  -- Lua
           "eslint",  -- ESLint
+          "pyright", -- Python (activated per-project via .nvim.lua)
+          "ruff",    -- Python linter/formatter (activated per-project via .nvim.lua)
         },
         automatic_installation = true,
         -- Enable each server after mason installs it
