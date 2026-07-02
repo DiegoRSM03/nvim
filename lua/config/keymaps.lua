@@ -42,6 +42,7 @@ map("n", "<leader>fh", "<cmd>FzfLua help_tags<CR>",   { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>FzfLua oldfiles<CR>",    { desc = "Recent files" })
 map("n", "<leader>fc", "<cmd>FzfLua commands<CR>",    { desc = "Commands" })
 map("n", "<leader>fs", "<cmd>FzfLua grep_curbuf<CR>", { desc = "Search current file" })
+map("n", "<leader>ft", "<cmd>FzfLua colorschemes<CR>", { desc = "Switch colorscheme" })
 
 -- ── LSP ──────────────────────────────────────────────────────
 -- Drop nvim 0.11 built-in gr* maps: they shadow `gr` (references)
